@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
-import { UpdateEmployeeDto } from './dto/update-dto';
+import { AuthRequest, UpdateEmployeeDto } from './dto/update-dto';
 import { EmployeeDto } from 'src/read/dto/employee.dto';
 import { SharedService } from 'src/shared/shared.service';
 const datapath = join(__dirname, '../../data/data.json');
+
 @Injectable()
 export class UpdateService {
   constructor(private readonly sharedService: SharedService) {}
@@ -37,5 +38,29 @@ export class UpdateService {
       employees[index].rating = data.rating;
     }
     writeFileSync(datapath, JSON.stringify(employees));
+  }
+
+  updatePassword(
+    req: AuthRequest,
+    oldPassword: string,
+    password: string,
+  ): string {
+    const emp = this.sharedService.emp;
+    if (req.payload) {
+      const email = req.payload.email;
+      const index = this.sharedService.findEmp(emp, 'email', email);
+      if (index === -1) {
+        throw new UnauthorizedException('Email does not exist');
+      }
+      if (emp[index].password === oldPassword) {
+        emp[index].password = password;
+        writeFileSync(datapath, JSON.stringify(emp));
+        return 'Password updated successfully';
+      } else {
+        return 'Old password is incorrect';
+      }
+    } else {
+      throw new UnauthorizedException('Access token invalid');
+    }
   }
 }

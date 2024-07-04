@@ -1,7 +1,15 @@
-import { Controller, Delete, Param, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Param,
+  ParseIntPipe,
+  UseGuards,
+} from '@nestjs/common';
 import { DeleteService } from './delete.service';
+import { AdminGuard, AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('delete')
+@UseGuards(AuthGuard, AdminGuard)
 export class DeleteController {
   constructor(private readonly deleteService: DeleteService) {}
 

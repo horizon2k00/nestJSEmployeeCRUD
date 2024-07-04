@@ -6,9 +6,19 @@ import { CreateModule } from './create/create.module';
 import { SharedModule } from './shared/shared.module';
 import { DeleteModule } from './delete/delete.module';
 import { UpdateModule } from './update/update.module';
+import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [ReadModule, CreateModule, SharedModule, DeleteModule, UpdateModule], // for other @modules in nested folders
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    ReadModule,
+    CreateModule,
+    SharedModule,
+    DeleteModule,
+    UpdateModule,
+    AuthModule,
+  ], // for other @modules in nested folders
   controllers: [AppController], //for all @controllers in this root
   providers: [AppService], //for a   @injectables in this root
 })

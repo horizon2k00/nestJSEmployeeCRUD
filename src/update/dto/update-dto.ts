@@ -3,6 +3,7 @@ import {
   IsInt,
   IsNumber,
   IsString,
+  IsStrongPassword,
   Length,
   Matches,
   Max,
@@ -38,4 +39,19 @@ export class UpdateEmployeeDto {
   @Min(0)
   @Max(100)
   readonly rating?: number;
+}
+
+export class PasswordUpdateDto {
+  @IsString()
+  oldPassword: string;
+  @IsStrongPassword()
+  password: string;
+}
+
+export interface AuthRequest extends Request {
+  payload: {
+    email: string;
+    audience: string;
+    privilege: 'Admin' | 'Employee';
+  };
 }

@@ -2,7 +2,6 @@ import {
   IsEmail,
   IsEmpty,
   IsEnum,
-  IsInt,
   IsNumber,
   IsString,
   IsStrongPassword,
@@ -47,12 +46,10 @@ export class CreateEmployeeDto {
   })
   privilege: string;
 
-  @IsString()
+  @IsEmpty()
   joinDate: string;
 
-  @IsInt()
-  @Min(0)
-  @Max(100)
+  @IsEmpty()
   rating: number;
 
   @IsEmpty()
