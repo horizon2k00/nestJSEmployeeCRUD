@@ -22,7 +22,6 @@ export class UpdateController {
   constructor(private readonly updateService: UpdateService) {}
 
   @Put('/password')
-  @UseGuards(IsAuthorisedGuard)
   updatePassword(
     @Req() req: AuthRequest,
     @Body(ValidationPipe) body: PasswordUpdateDto,

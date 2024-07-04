@@ -1,14 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { readFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { EmployeeDto } from 'src/read/dto/employee.dto';
-import { keys } from './dto/shared.dto';
+import { ChangeLogDto, keys } from './dto/shared.dto';
 const datapath = join(__dirname, '../../data/data.json');
+const changepath = join(__dirname, '../../data/changeLog.json');
 
 @Injectable()
 export class SharedService {
   get emp(): EmployeeDto[] {
     return JSON.parse(readFileSync(datapath, 'utf-8'));
+  }
+
+  get changeLog(): ChangeLogDto[] {
+    return JSON.parse(readFileSync(changepath, 'utf-8'));
+  }
+
+  set emp(emp: EmployeeDto[]) {
+    writeFileSync(datapath, JSON.stringify(emp));
+  }
+  set changeLog(changeLog: ChangeLogDto[]) {
+    writeFileSync(changepath, JSON.stringify(changeLog));
   }
 
   findEmp(emp: EmployeeDto[], key: string, parameter: string | number): number {

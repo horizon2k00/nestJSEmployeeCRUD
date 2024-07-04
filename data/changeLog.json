@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "empId": 1,
+    "createdAt": 1720091377740,
+    "before": { "rating": 75 },
+    "after": { "rating": 80 },
+    "updatedAt": 1720091377742
+  },
+  {
+    "id": 2,
+    "empId": 9,
+    "createdAt": 1720091871035,
+    "before": {},
+    "after": {
+      "name": "Ava Martinez",
+      "position": "Intern",
+      "department": "Frontend",
+      "salary": 37000,
+      "email": "ava.martinez@example.com",
+      "password": "$2b$05$ffM.y6M6ei0UAn/CQoNsK.g.w8Uq5KU3FHhO540kpdFCwrOYm1yb6",
+      "age": 22,
+      "privilege": "Employee",
+      "empId": 9,
+      "rating": 40,
+      "joinDate": "Thu Jul 04 2024 16:47:51 GMT+0530 (India Standard Time)"
+    },
+    "updatedAt": 1720091871035
+  }
+]

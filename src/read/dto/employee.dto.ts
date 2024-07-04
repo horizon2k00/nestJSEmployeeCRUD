@@ -47,7 +47,7 @@ export class EmployeeDto {
   privilege: string;
 
   @IsDate()
-  joinDate: string;
+  joinDate: number;
 
   @IsInt()
   @Min(0)

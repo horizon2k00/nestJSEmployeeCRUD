@@ -47,7 +47,7 @@ export class CreateEmployeeDto {
   privilege: string;
 
   @IsEmpty()
-  joinDate: string;
+  joinDate: number;
 
   @IsEmpty()
   rating: number;

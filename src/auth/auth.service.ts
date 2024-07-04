@@ -3,6 +3,7 @@ import { LoginDto } from './dto/login.dto';
 import { EmployeeDto } from 'src/read/dto/employee.dto';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import * as bcrypt from 'bcrypt';
 import { SharedService } from 'src/shared/shared.service';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
@@ -22,12 +23,17 @@ export class AuthService {
     return JSON.parse(readFileSync(this.datapath, 'utf-8'));
   }
 
-  authenticateUser(loginData: LoginDto, @Res() res: Response): string {
+  async authenticateUser(
+    loginData: LoginDto,
+    @Res() res: Response,
+  ): Promise<string> {
     const { email, password } = loginData;
     const index = this.sharedService.findEmp(this.emp, 'email', email);
     if (index === -1) {
       throw new UnauthorizedException('Invalid Email');
-    } else if (this.emp[index].password === password) {
+    }
+    const authorised = await bcrypt.compare(password, this.emp[index].password);
+    if (authorised) {
       const payload = {
         email,
         audience: 'employee storage',
