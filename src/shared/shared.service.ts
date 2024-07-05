@@ -29,7 +29,7 @@ export class SharedService {
   }
 
   paginate(
-    employees: EmployeeDto[],
+    employees: Partial<EmployeeDto>[],
     limit: number | null | undefined,
     page: number | null | undefined,
   ) {

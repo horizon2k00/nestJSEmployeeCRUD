@@ -13,8 +13,13 @@ export class ReadService {
   get emp(): EmployeeDto[] {
     return JSON.parse(fs.readFileSync(this.datapath, 'utf-8'));
   }
-  findAll(limit: number, page: number): EmployeeDto[] {
-    return this.sharedService.paginate(this.emp, limit, page);
+  findAll(limit: number, page: number): Partial<EmployeeDto>[] {
+    //return only id, name, age and rating
+    const partialEmp: Partial<EmployeeDto>[] = [];
+    this.emp.map(({ empId, name, age, rating }) => {
+      partialEmp.push({ empId, name, age, rating });
+    });
+    return this.sharedService.paginate(partialEmp, limit, page);
   }
 
   findOne(id: number): EmployeeDto | string {
