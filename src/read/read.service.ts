@@ -86,4 +86,23 @@ export class ReadService {
 
     return filterArr.length;
   }
+
+  getEmpHistory(empId: number) {
+    const empChangeLog = this.sharedService.changeLog.filter(
+      (e) => e.empId === empId,
+    );
+    empChangeLog.sort((a, b) => b.updatedAt - a.updatedAt);
+    const empHist: {
+      update: number;
+      updatedAt: number;
+      after: object;
+      before: object;
+    }[] = [];
+    let update = empChangeLog.length;
+    empChangeLog.map((e) => {
+      const { updatedAt, after, before } = e;
+      empHist.push({ update: update--, updatedAt, after, before });
+    });
+    return empHist;
+  }
 }

@@ -78,3 +78,5 @@ export class ChangeLogDto {
   };
   updatedAt: number;
 }
+
+export type NumberKey = 'salary' | 'empId' | 'age' | 'rating';

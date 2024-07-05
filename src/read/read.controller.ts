@@ -79,6 +79,12 @@ export class ReadController {
     return this.readService.getDeptCount(query.dept);
   }
 
+  @Get('/history/:id')
+  @UseGuards(IsAuthorisedGuard)
+  getEmpHistory(@Param('id', ParseIntPipe) id: number) {
+    return this.readService.getEmpHistory(id);
+  }
+
   @Get(':id')
   @UseGuards(IsAuthorisedGuard)
   findOne(@Param('id', ParseIntPipe) id: number) {

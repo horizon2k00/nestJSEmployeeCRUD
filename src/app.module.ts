@@ -8,6 +8,8 @@ import { DeleteModule } from './delete/delete.module';
 import { UpdateModule } from './update/update.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { SalaryReadModule } from './salary-read/salary-read.module';
+import { BulkUpdateModule } from './bulk-update/bulk-update.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { ConfigModule } from '@nestjs/config';
     DeleteModule,
     UpdateModule,
     AuthModule,
+    SalaryReadModule,
+    BulkUpdateModule,
   ], // for other @modules in nested folders
   controllers: [AppController], //for all @controllers in this root
   providers: [AppService], //for a   @injectables in this root
