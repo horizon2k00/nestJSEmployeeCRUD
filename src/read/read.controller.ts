@@ -87,7 +87,7 @@ export class ReadController {
 
   @Get(':id')
   @UseGuards(IsAuthorisedGuard)
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id') id: string) {
     return this.readService.findOne(id);
   }
 }

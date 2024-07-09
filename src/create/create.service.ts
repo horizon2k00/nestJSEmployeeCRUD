@@ -1,27 +1,34 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { writeFile } from 'fs';
+import { HttpException, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { join } from 'path';
 import { CreateEmployeeDto } from './dto/create.dto';
-import { EmployeeDto } from 'src/read/dto/employee.dto';
 import { SharedService } from 'src/shared/shared.service';
-import { ChangeLogDto } from 'src/shared/dto/shared.dto';
-const datapath = join(__dirname, '../../data/data.json');
+import { InjectModel } from '@nestjs/mongoose';
+import { ChangeLog, Employee } from 'src/schemas/employee.schema';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class CreateService {
-  constructor(private readonly sharedService: SharedService) {}
-  async createEmployee(emp: CreateEmployeeDto): Promise<CreateEmployeeDto> {
-    const index = this.sharedService.findEmp(
-      this.sharedService.emp,
-      'email',
-      emp.email,
-    );
-    if (index !== -1) {
+  constructor(
+    @InjectModel(ChangeLog.name) private changeLogModel: Model<ChangeLog>,
+    @InjectModel(Employee.name) private employeeModel: Model<Employee>,
+    private readonly sharedService: SharedService,
+  ) {}
+  async createEmployee(emp: CreateEmployeeDto): Promise<Employee> {
+    // const index = this.sharedService.findEmp(
+    //   this.sharedService.getemp(),
+    //   'email',
+    //   emp.email,
+    // );
+    const overlap = await this.employeeModel.find({ email: emp.email }).exec();
+    console.log(overlap);
+    if (overlap.length) {
       throw new HttpException('User with this email already exists', 400);
     }
     try {
-      const employees: EmployeeDto[] = this.sharedService.emp;
+      console.log('creating...');
+      const employees: Employee[] = await this.employeeModel.find().exec();
+      console.log(employees);
+
       if (employees.length === 0) {
         emp.empId = 1;
       } else {
@@ -30,37 +37,15 @@ export class CreateService {
       emp.rating = 40;
       emp.joinDate = Date.now();
       emp.password = await bcrypt.hash(emp.password, 5);
-      employees.push(emp);
-      const changeLog: ChangeLogDto[] = this.sharedService.changeLog;
-      const change: ChangeLogDto = {
-        id: 1,
-        empId: emp.empId,
-        createdAt: Date.now(),
-        before: {},
-        after: {},
-        updatedAt: Date.now(),
-      };
-      if (changeLog.length !== 0) {
-        change.id = changeLog[changeLog.length - 1].id + 1;
-      }
+      const change: ChangeLog = await this.sharedService.createChangeLog(
+        emp.empId,
+      );
       change.after = emp;
-      changeLog.push(change);
-      try {
-        writeFile(datapath, JSON.stringify(employees), function (err) {
-          if (err) {
-            console.log(err);
-            throw new HttpException(
-              'internal server error',
-              HttpStatus.INTERNAL_SERVER_ERROR,
-            );
-          }
-        });
-      } catch (err) {
-        console.log(err);
-        throw err;
-      }
-      this.sharedService.changeLog = changeLog;
-      return emp;
+      const newChangeLog =
+        await this.changeLogModel.collection.insertOne(change);
+      console.log(newChangeLog);
+      const createEmp = new this.employeeModel(emp);
+      return createEmp.save();
     } catch (err) {
       return err;
     }

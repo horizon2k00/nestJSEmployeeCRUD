@@ -1,35 +1,54 @@
 import { Injectable } from '@nestjs/common';
-import { readFileSync, writeFileSync } from 'fs';
-import { join } from 'path';
-import { EmployeeDto } from 'src/read/dto/employee.dto';
-import { ChangeLogDto, keys, NumberKey } from './dto/shared.dto';
-const datapath = join(__dirname, '../../data/data.json');
-const changepath = join(__dirname, '../../data/changeLog.json');
+import { NumberKey } from './dto/shared.dto';
+import { ChangeLog, Employee } from 'src/schemas/employee.schema';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class SharedService {
-  get emp(): EmployeeDto[] {
-    return JSON.parse(readFileSync(datapath, 'utf-8'));
-  }
+  constructor(
+    @InjectModel(ChangeLog.name) private changeLogModel: Model<ChangeLog>,
+  ) {}
 
-  get changeLog(): ChangeLogDto[] {
-    return JSON.parse(readFileSync(changepath, 'utf-8'));
-  }
+  // get emp(): EmployeeDto[] {
+  //   return JSON.parse(readFileSync(datapath, 'utf-8'));
+  // }
 
-  set emp(emp: EmployeeDto[]) {
-    writeFileSync(datapath, JSON.stringify(emp));
-  }
-  set changeLog(changeLog: ChangeLogDto[]) {
-    writeFileSync(changepath, JSON.stringify(changeLog));
-  }
+  // get changeLog(): ChangeLogDto[] {
+  //   return JSON.parse(readFileSync(changepath, 'utf-8'));
+  // }
 
-  findEmp(emp: EmployeeDto[], key: string, parameter: string | number): number {
-    const index: number = emp.findIndex((e) => e[key] === parameter);
-    return index;
-  }
+  // set emp(emp: EmployeeDto[]) {
+  //   writeFileSync(datapath, JSON.stringify(emp));
+  // }
+  // set changeLog(changeLog: ChangeLogDto[]) {
+  //   writeFileSync(changepath, JSON.stringify(changeLog));
+  // }
+
+  // findEmp(emp: EmployeeDto[], key: string, parameter: string | number): number {
+  //   const index: number = emp.findIndex((e) => e[key] === parameter);
+  //   return index;
+  // }
+  // sortBy(employees: Employee[], param: keys, order: number | undefined | null) {
+  //   employees.sort((a, b) => {
+  //     if (order === 1 || order !== -1) {
+  //       if (a[param] < b[param]) {
+  //         return -1;
+  //       } else if (a[param] === b[param]) {
+  //         return 0;
+  //       } else return 1;
+  //     } else {
+  //       if (a[param] > b[param]) {
+  //         return -1;
+  //       } else if (a[param] === b[param]) {
+  //         return 0;
+  //       } else return 1;
+  //     }
+  //   });
+  // }
 
   paginate(
-    employees: Partial<EmployeeDto>[],
+    employees: Employee[],
     limit: number | null | undefined,
     page: number | null | undefined,
   ) {
@@ -54,27 +73,6 @@ export class SharedService {
     const returnList = employees.slice((page - 1) * limit, page * limit);
     return returnList;
   }
-  sortBy(
-    employees: EmployeeDto[],
-    param: keys,
-    order: number | undefined | null,
-  ) {
-    employees.sort((a, b) => {
-      if (order === 1 || order !== -1) {
-        if (a[param] < b[param]) {
-          return -1;
-        } else if (a[param] === b[param]) {
-          return 0;
-        } else return 1;
-      } else {
-        if (a[param] > b[param]) {
-          return -1;
-        } else if (a[param] === b[param]) {
-          return 0;
-        } else return 1;
-      }
-    });
-  }
   arrAverage(arr: number[]): number[] {
     let tot: number = 0;
     arr.map((element) => {
@@ -93,7 +91,7 @@ export class SharedService {
     console.log(csv);
     return csv;
   }
-  findMax(emp: EmployeeDto[], key: NumberKey): number {
+  findMax(emp: Employee[], key: NumberKey): number {
     let max = 0;
     emp.map((e) => {
       if (e[key] > max) max = e[key];
@@ -101,7 +99,7 @@ export class SharedService {
     return max;
   }
 
-  findMin(emp: EmployeeDto[], key: NumberKey): number {
+  findMin(emp: Employee[], key: NumberKey): number {
     let min = Infinity;
     emp.map((e) => {
       if (e[key] < min) min = e[key];
@@ -109,20 +107,15 @@ export class SharedService {
     return min;
   }
 
-  createChangeLog(emp: EmployeeDto, changeLog: ChangeLogDto[]) {
-    let id: number;
-    if (changeLog.length === 0) {
-      id = 1;
-    } else {
-      id = changeLog[changeLog.length - 1].id + 1;
-    }
-    const change: ChangeLogDto = {
-      id,
-      empId: emp.empId,
+  async createChangeLog(empId: number): Promise<ChangeLog> {
+    const changeCount = await this.changeLogModel.collection.countDocuments();
+    const change: ChangeLog = {
+      updateNo: changeCount + 1,
+      empId,
       createdAt: Date.now(),
       before: {},
       after: {},
-      updatedAt: 0,
+      updatedAt: Date.now(),
     };
     return change;
   }

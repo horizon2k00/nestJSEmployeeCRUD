@@ -9,12 +9,9 @@ import {
   Req,
 } from '@nestjs/common';
 import { UpdateService } from './update.service';
-import {
-  AuthRequest,
-  PasswordUpdateDto,
-  UpdateEmployeeDto,
-} from './dto/update-dto';
+import { AuthRequest, PasswordUpdateDto } from './dto/update-dto';
 import { AuthGuard, IsAuthorisedGuard } from 'src/auth/auth.guard';
+import { Employee } from 'src/schemas/employee.schema';
 
 @Controller('update')
 @UseGuards(AuthGuard)
@@ -26,7 +23,7 @@ export class UpdateController {
     @Req() req: AuthRequest,
     @Body(ValidationPipe) body: PasswordUpdateDto,
   ) {
-    return this.updateService.updatePassword(
+    return this.updateService.updatePasswordMongo(
       req,
       body.oldPassword,
       body.password,
@@ -44,14 +41,8 @@ export class UpdateController {
         forbidNonWhitelisted: true,
       }),
     )
-    data: UpdateEmployeeDto,
+    data: Partial<Employee>,
   ) {
-    try {
-      this.updateService.updateId(id, data);
-      return `Updated employee ${id} successfully`;
-    } catch (err) {
-      console.log(err);
-      return err;
-    }
+    return this.updateService.updateIdMongo(id, data);
   }
 }

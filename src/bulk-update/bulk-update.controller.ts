@@ -16,6 +16,6 @@ export class BulkUpdateController {
 
   @Put()
   updateBulk(@Body(ValidationPipe) body: BulkUpdateDto) {
-    return this.bulkUpdateService.updateBulk(body);
+    return this.bulkUpdateService.updateBulkMongo(body);
   }
 }

@@ -6,7 +6,10 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { Observable } from 'rxjs';
+import { Employee } from 'src/schemas/employee.schema';
 import { SharedService } from 'src/shared/shared.service';
 
 @Injectable()
@@ -50,19 +53,25 @@ export class AdminGuard implements CanActivate {
 
 @Injectable()
 export class IsAuthorisedGuard implements CanActivate {
-  constructor(private readonly sharedService: SharedService) {}
-  canActivate(context: ExecutionContext): boolean {
+  constructor(
+    @InjectModel(Employee.name) private employeeModel: Model<Employee>,
+    private readonly sharedService: SharedService,
+  ) {}
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const id = parseInt(request.params.id);
-    const index = this.sharedService.findEmp(
-      this.sharedService.emp,
-      'email',
-      request.payload.email,
-    );
-    if (index === -1) {
+    const findEmpMail = await this.employeeModel
+      .find({
+        email: request.payload.email,
+      })
+      .lean()
+      .exec();
+    if (findEmpMail.length === 0) {
+      console.log(findEmpMail);
       throw new UnauthorizedException('Bad token');
     }
-    if (this.sharedService.emp[index].empId === id) {
+    const findEmpId = this.employeeModel.find({ empId: id });
+    if ((await findEmpId).length) {
       return true;
     }
     if (request.payload.privilege === 'Admin') {

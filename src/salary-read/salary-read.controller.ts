@@ -19,8 +19,8 @@ export class SalaryReadController {
   constructor(private readonly salaryReadService: SalaryReadService) {}
 
   @Get('report')
-  downloadReport(@Res() res: Response) {
-    res.download(this.salaryReadService.downloadReport());
+  async downloadReport(@Res() res: Response) {
+    res.download(await this.salaryReadService.downloadReport());
   }
 
   @Get('top')

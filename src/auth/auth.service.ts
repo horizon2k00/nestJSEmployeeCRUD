@@ -1,43 +1,36 @@
 import { Injectable, Res, UnauthorizedException } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
-import { EmployeeDto } from 'src/read/dto/employee.dto';
-import { readFileSync } from 'fs';
-import { join } from 'path';
 import * as bcrypt from 'bcrypt';
-import { SharedService } from 'src/shared/shared.service';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Employee } from 'src/schemas/employee.schema';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private sharedService: SharedService,
+    @InjectModel(Employee.name) private employeeModel: Model<Employee>,
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {}
-
-  datapath = join(__dirname, '../../data/data.json');
-
-  get emp(): EmployeeDto[] {
-    return JSON.parse(readFileSync(this.datapath, 'utf-8'));
-  }
 
   async authenticateUser(
     loginData: LoginDto,
     @Res() res: Response,
   ): Promise<string> {
     const { email, password } = loginData;
-    const index = this.sharedService.findEmp(this.emp, 'email', email);
-    if (index === -1) {
+    const emp = await this.employeeModel.findOne({ email: email });
+    if (!emp) {
       throw new UnauthorizedException('Invalid Email');
     }
-    const authorised = await bcrypt.compare(password, this.emp[index].password);
+    const authorised = await bcrypt.compare(password, emp.password);
     if (authorised) {
       const payload = {
         email,
         audience: 'employee storage',
-        privilege: this.emp[index].privilege,
+        privilege: emp.privilege,
       };
       console.log(this.configService.get('SECRET_KEY'));
       const jwt = this.jwtService.sign(payload);

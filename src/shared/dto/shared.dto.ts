@@ -19,7 +19,7 @@ export type keys =
   | 'position'
   | 'department'
   | 'privilege'
-  | 'joindate'
+  | 'joinDate'
   | 'rating';
 
 export class EmployeeDto {
@@ -67,7 +67,7 @@ export class EmployeeDto {
 }
 
 export class ChangeLogDto {
-  id: number;
+  updateNo: number;
   empId: number;
   createdAt: number;
   before: {

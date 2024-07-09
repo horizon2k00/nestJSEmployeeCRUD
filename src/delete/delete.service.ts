@@ -1,64 +1,48 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { readFileSync, writeFileSync } from 'fs';
-import { join } from 'path';
-import { EmployeeDto } from 'src/read/dto/employee.dto';
-import { ChangeLogDto } from 'src/shared/dto/shared.dto';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { ChangeLog, Employee } from 'src/schemas/employee.schema';
 import { SharedService } from 'src/shared/shared.service';
-const datapath = join(__dirname, '../../data/data.json');
 
 @Injectable()
 export class DeleteService {
-  constructor(private readonly sharedService: SharedService) {}
+  constructor(
+    @InjectModel(Employee.name) private employeeModel: Model<Employee>,
+    @InjectModel(ChangeLog.name) private changeLogModel: Model<ChangeLog>,
+    private readonly sharedService: SharedService,
+  ) {}
 
-  get emp() {
-    return JSON.parse(readFileSync(datapath, 'utf-8'));
+  async deleteAll() {
+    // const changeCount = await this.changeLogModel.collection.countDocuments();
+    const change: ChangeLog = await this.sharedService.createChangeLog(NaN);
+    change.allDeleted = true;
+    const updatelogs = await this.changeLogModel.collection.insertOne(change);
+    console.log(updatelogs);
+    const delRes = await this.employeeModel.deleteMany({});
+    return delRes.acknowledged
+      ? delRes.deletedCount === 0
+        ? new BadRequestException('No employees in database')
+        : 'Employee DB successfully deleted'
+      : new InternalServerErrorException('Delete request unsuccessful');
   }
 
-  deleteAll() {
-    try {
-      writeFileSync(datapath, '[]');
-      return 'All employees deleted';
-    } catch (err) {
-      console.log(err);
-      return new HttpException(
-        'server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
-  deleteId(id: number) {
-    try {
-      const employees: EmployeeDto[] = this.emp;
-      const index = this.sharedService.findEmp(employees, 'empId', id);
-      const changeLog: ChangeLogDto[] = this.sharedService.changeLog;
-      const change: ChangeLogDto = {
-        id: 1,
-        empId: id,
-        createdAt: Date.now(),
-        before: {},
-        after: {},
-        updatedAt: Date.now(),
-      };
-      if (changeLog.length !== 0) {
-        change.id = changeLog[changeLog.length - 1].id + 1;
-      }
-      if (index === -1) {
-        return 'Id does not exist';
-      }
-      change.before = employees[index];
-      changeLog.push(change);
-      employees.splice(index, 1);
-      // writeFileSync(datapath, JSON.stringify(employees));
-      this.sharedService.emp = employees;
-      this.sharedService.changeLog = changeLog;
+  async deleteId(id: number) {
+    const delRes: Employee | null = await this.employeeModel
+      .findOneAndDelete({ empId: id })
+      .lean()
+      .exec();
+    console.log(delRes);
+    const change: ChangeLog = await this.sharedService.createChangeLog(id);
+    if (delRes) {
+      change.before = delRes;
+      this.changeLogModel.collection.insertOne(change);
       return `Employee id ${id} deleted successfuly`;
-    } catch (err) {
-      console.log(err);
-      return new HttpException(
-        'server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+    } else {
+      throw new BadRequestException('Invalid id');
     }
   }
 }

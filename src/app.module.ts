@@ -10,10 +10,12 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { SalaryReadModule } from './salary-read/salary-read.module';
 import { BulkUpdateModule } from './bulk-update/bulk-update.module';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    MongooseModule.forRoot('mongodb://127.0.0.1:27017/employeesDB'),
     ReadModule,
     CreateModule,
     SharedModule,
