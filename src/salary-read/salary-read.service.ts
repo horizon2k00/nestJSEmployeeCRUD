@@ -41,65 +41,58 @@ export class SalaryReadService {
     return emp;
   }
 
-  getSalaryAvg() {
-    //figure this out after you finish the mongo link on the rest of the project(aggregations)
-    const emp = this.employeeModel.aggregate([
+  async getSalaryAvg() {
+    const emp = await this.employeeModel.aggregate([
       {
         $group: {
           _id: null,
-          users: { $addToSet: '_id' },
-          avgSal: { $avg: 'users.salary' },
+          avgSal: { $avg: '$salary' },
         },
       },
     ]);
     console.log(emp);
-    // const salaryList: number[] = [];
-    // emp.map((e) => salaryList.push(e.salary));
-    // return this.sharedService.arrAverage(salaryList)[1].toFixed(2);
-    return emp;
+    return emp[0].avgSal.toFixed(2);
   }
   //final boss(aggregations)
-  getAllDeptAvg() {
-    // const emp = this.sharedService.emp;
-    // const deptObj: { [index: string]: number[] } = {};
-    // emp.map((e) => {
-    //   deptObj[e.department] = [];
-    // });
-    // emp.map((e) => {
-    //   deptObj[e.department].push(e.salary);
-    // });
-    // const output: { department: string; total: string; average: string }[] = [];
-    // Object.keys(deptObj).forEach((key) => {
-    //   const avg: number[] = this.sharedService.arrAverage(deptObj[key]);
-    //   output.push({
-    //     department: key,
-    //     total: avg[0].toFixed(2),
-    //     average: avg[1].toFixed(2),
-    //   });
-    // });
-    // return output;
+  async getAllDeptAvg() {
+    const emp = await this.employeeModel.aggregate([
+      { $group: { _id: '$department', avgSal: { $avg: '$salary' } } },
+      { $sort: { avgSal: -1 } },
+    ]);
+    console.log(emp);
+    return emp;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getAvgBydept(dept: 'Frontend' | 'Backend' | 'Fullstack') {
-    // const emp = this.sharedService.emp;
-    // const deptSalList: number[] = [];
-    // emp
-    //   .filter((e) => e.department === dept)
-    //   .map((e) => deptSalList.push(e.salary));
-    // const avg: number[] = this.sharedService.arrAverage(deptSalList);
-    // return `Department: ${dept}\n Total Salary: ${avg[0]}\n Average Salary: ${avg[1]}`;
+  async getAvgBydept(dept: 'Frontend' | 'Backend' | 'Fullstack') {
+    const emp = await this.employeeModel.aggregate([
+      { $match: { department: dept } },
+      { $group: { _id: '$department', avgSal: { $avg: '$salary' } } },
+      { $sort: { avgSal: -1 } },
+    ]);
+    console.log(emp);
+    return emp;
   }
 
   async getDeptMaxMin(dept: 'Frontend' | 'Backend' | 'Fullstack') {
-    // const emp = this.sharedService.emp;
-    // const filterArr = emp.filter((e) => e.department === dept);
-    const emp = await this.employeeModel
-      .find({ department: dept })
-      .lean()
-      .exec();
-    const max: number = this.sharedService.findMax(emp, 'salary');
-    const min: number = this.sharedService.findMin(emp, 'salary');
-    return `Department: ${dept}\n Max Salary: ${max}\n Min Salary: ${min}`;
+    //   const emp = await this.employeeModel
+    //     .find({ department: dept })
+    //     .lean()
+    //     .exec();
+    //   const max: number = this.sharedService.findMax(emp, 'salary');
+    //   const min: number = this.sharedService.findMin(emp, 'salary');
+    //   return `Department: ${dept}\n Max Salary: ${max}\n Min Salary: ${min}`;
+    // }
+    const list = await this.employeeModel.aggregate([
+      { $match: { department: dept } },
+      {
+        $group: {
+          _id: null,
+          maxSal: { $max: '$salary' },
+          minSal: { $min: '$salary' },
+        },
+      },
+    ]);
+    console.log(list);
+    return list;
   }
 }

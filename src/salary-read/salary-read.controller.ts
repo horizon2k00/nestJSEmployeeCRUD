@@ -29,13 +29,13 @@ export class SalaryReadController {
   }
 
   @Get('average')
-  getSalaryAvg() {
-    return this.salaryReadService.getSalaryAvg();
+  async getSalaryAvg() {
+    return await this.salaryReadService.getSalaryAvg();
   }
 
   @Get('average/dept/all')
-  getAllDeptAvg() {
-    return this.salaryReadService.getAllDeptAvg();
+  async getAllDeptAvg() {
+    return await this.salaryReadService.getAllDeptAvg();
   }
 
   @Get('average/dept')

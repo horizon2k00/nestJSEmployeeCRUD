@@ -11,6 +11,7 @@ import {
 } from 'class-validator';
 
 export class UpdateEmployeeDto {
+  [key: string]: number | string | undefined;
   @IsString()
   @Length(2, 50)
   @Matches(/^[A-Z]([-']?[a-z]+)*( [A-Z]([-']?[a-z]+)*)+$/)

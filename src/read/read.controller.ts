@@ -72,7 +72,7 @@ export class ReadController {
   @UseGuards(AdminGuard)
   @UsePipes(new ValidationPipe({ transform: true }))
   getDeptCount(
-    @Query() // isnt usable now but just setup dto for query obj and put validation decorators on those.
+    @Query()
     query: DeptDto,
   ) {
     console.log(query);
