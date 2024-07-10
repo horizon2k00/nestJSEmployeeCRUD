@@ -1,0 +1,18 @@
+_id,name,age,position,department,salary,email,password,privilege,joinDate,rating,empId
+668cf8103198e686f0c4d22d,John Doe,28,Developer,Frontend,100000,doe@gmail.com,$2b$05$xp8MEOmDWVqucG4RelAe/.0OL7yKFikEnQ5Zml4WX3TSHyVdnMBtG,Admin,1720514576343,65,1
+668cf8233198e686f0c4d234,Michael Smith,28,Developer,Backend,55000,michael.smith@example.com,$2b$05$bpiytZQ1FDUmP6pDTSSR2.swHqD7pP4eXKRObU0hlZHYEd1kDIiqC,Employee,1720514595152,65,2
+668cf9ed168c2c7e38f241ae,Sophia Brown,25,Tester,Fullstack,45000,sophia.brown@example.com,$2b$05$eUYprwJrYVVNHEhjB97SKOZxtbBRPadl/s1cR373lUVfsLAjYPWCW,Employee,1720515053773,65,3
+668e5cbb96fb3416a9f07ccf,William Miller,27,QA,Backend,42000,william.miller@example.com,$2b$05$ugqN138LOTG5gLCtaluRNemHYCFWTINncEY.cVl4T.yBUf6wxLVF6,Employee,1720605883753,40,4
+668e5ccb96fb3416a9f07cd6,Olivia Jones,21,Intern,Frontend,36000,olivia.jones@example.com,$2b$05$KKjduNj9yhpYPe7sLbIvuOts.WAzIh33d24uU.vtEFZTB/EzJkNcO,Employee,1720605899937,40,5
+668e5cd996fb3416a9f07cde,James Davis,29,Developer,Backend,56000,james.davis@example.com,$2b$05$DIoc01C8QVvwjrY8VzKl0uTYlSEZXN3jbmgbN8.g2AM3.0iPXBZtC,Employee,1720605913039,40,6
+668e5ce296fb3416a9f07ce5,Emma Wilson,26,Tester,Fullstack,47000,emma.wilson@example.com,$2b$05$O9.tBZnF.3tmz.CVpodEVOtze2tImg86J1h22/8ZbCCgNxhk23TXW,Employee,1720605922716,40,7
+668e5d0c96fb3416a9f07cec,Alexander Taylor,28,QA,Backend,43000,alexander.taylor@example.com,$2b$05$j7bC95x1XAnbl.04zPdaqOG.lmC34/w6l7Ign.bFpv7vPo33/MRGW,Employee,1720605964078,40,8
+668e5d2896fb3416a9f07cf3,Ava Martinez,22,Intern,Frontend,37000,ava.martinez@example.com,$2b$05$rmRqJ1j6c0DUc3UTWiYN0uXLR3EbmIvGMUleZWgn7qPIf.KMvUFYO,Employee,1720605992935,40,9
+668e5d8c96fb3416a9f07cfd,Liam Anderson,30,Developer,Backend,57000,liam.anderson@example.com,$2b$05$tD14FXoBhy5Z/O/4ci0CoeaIfmMY4Gs7xkQTi3uMrsz6Wbr16VFuO,Employee,1720606092020,40,10
+668e5da996fb3416a9f07d04,Isabella Garcia,27,Tester,Fullstack,48000,isabella.garcia@example.com,$2b$05$rrmKtpEqaii8cha3TKj4cOkL6RHaJpsdOxrtPZYn.hsZFO1sf07fW,Employee,1720606121885,40,11
+668e5db296fb3416a9f07d0b,Noah Rodriguez,29,QA,Backend,44000,noah.rodriguez@example.com,$2b$05$L5VcT/U77VubTHUgL7QS0.rMlZXxRoZzUf.13A6txRhhnGLmmOvti,Employee,1720606130695,40,12
+668e5dbc96fb3416a9f07d12,Mia Martinez,23,Intern,Frontend,38000,mia.martinez@example.com,$2b$05$S8h23cXneb7nbvjgvWVuuebDoDgOw1mds2Hmc7Agbqex494TcbsGO,Employee,1720606140460,40,13
+668e5dcd96fb3416a9f07d19,Ethan Hernandez,31,Developer,Backend,58000,ethan.hernandez@example.com,$2b$05$98iLIbyTWXnnmVfv31W4/.uJngVU3k6poFtP2TXi1gAY2csOvBWgO,Employee,1720606157133,40,14
+668e5df296fb3416a9f07d21,Charlotte Martinez,28,Tester,Fullstack,49000,charlotte.martinez@example.com,$2b$05$aabRsNjlf7S7PH4v.rmCxOTppn7d/POcI0QQO/wow.5Ba7DUaNipi,Employee,1720606194505,40,15
+668e5dfc96fb3416a9f07d28,Oliver Clark,24,Intern,Frontend,39000,oliver.clark@example.com,$2b$05$H5s9kqolQYAuPRMZI92FLOrWvYnHzRade.OaTSyWGZhW0A5ChmhP6,Admin,1720606204879,40,16
+668e5e0696fb3416a9f07d2f,Aria Garcia,32,Developer,Backend,59000,aria.garcia@example.com,$2b$05$hahqVuTPK1bRO8Rhy1aa9O7uCJAbHB5BnzzWdaYFwnnpz2hsSkUpi,Admin,1720606214207,40,17

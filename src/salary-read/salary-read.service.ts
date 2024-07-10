@@ -14,24 +14,18 @@ export class SalaryReadService {
     private readonly sharedService: SharedService,
   ) {}
   async downloadReport() {
-    const emp = await this.employeeModel.find().lean().exec();
-    const deptObj: { [index: string]: number[] } = {};
-    emp.map((e) => {
-      deptObj[e.department] = [];
-    });
-    emp.map((e) => {
-      deptObj[e.department].push(e.salary);
-    });
-    const output: { [key: string]: string | number }[] = [];
-    Object.keys(deptObj).forEach((key) => {
-      const avg: number[] = this.sharedService.arrAverage(deptObj[key]);
-      output.push({
-        department: key,
-        totalSalaryExpenditure: avg[0],
-        deptAvg: avg[1].toFixed(2),
-      });
-    });
-    const csvData: string = this.sharedService.JSONtoCSV(output);
+    const list = await this.employeeModel.aggregate([
+      {
+        $group: {
+          _id: '$department',
+          department: { $first: '$department' }, //to send 'department' as key to hold the dept name instead of '_id' and to make it the first entry in the object for convenience of user
+          totalSalaryExpenditure: { $sum: '$salary' },
+          deptAvg: { $avg: '$salary' },
+        },
+      },
+      { $project: { _id: 0 } },
+    ]);
+    const csvData: string = this.sharedService.JSONtoCSV(list);
     writeFileSync(csvPath, csvData);
     return csvPath;
   }
@@ -49,15 +43,17 @@ export class SalaryReadService {
           avgSal: { $avg: '$salary' },
         },
       },
+      { $project: { _id: 0, avgSalRound: { $round: ['$avgSal', 2] } } },
     ]);
     console.log(emp);
-    return emp[0].avgSal.toFixed(2);
+    return emp;
   }
-  //final boss(aggregations)
+
   async getAllDeptAvg() {
     const emp = await this.employeeModel.aggregate([
       { $group: { _id: '$department', avgSal: { $avg: '$salary' } } },
       { $sort: { avgSal: -1 } },
+      { $project: { _id: 1, avgSal: { $round: ['$avgSal', 2] } } },
     ]);
     console.log(emp);
     return emp;
@@ -68,29 +64,23 @@ export class SalaryReadService {
       { $match: { department: dept } },
       { $group: { _id: '$department', avgSal: { $avg: '$salary' } } },
       { $sort: { avgSal: -1 } },
+      { $project: { _id: 1, avgSal: { $round: ['$avgSal', 2] } } },
     ]);
     console.log(emp);
     return emp;
   }
 
   async getDeptMaxMin(dept: 'Frontend' | 'Backend' | 'Fullstack') {
-    //   const emp = await this.employeeModel
-    //     .find({ department: dept })
-    //     .lean()
-    //     .exec();
-    //   const max: number = this.sharedService.findMax(emp, 'salary');
-    //   const min: number = this.sharedService.findMin(emp, 'salary');
-    //   return `Department: ${dept}\n Max Salary: ${max}\n Min Salary: ${min}`;
-    // }
     const list = await this.employeeModel.aggregate([
       { $match: { department: dept } },
       {
         $group: {
-          _id: null,
+          _id: '$department',
           maxSal: { $max: '$salary' },
           minSal: { $min: '$salary' },
         },
       },
+      { $project: { _id: 1, maxSal: 1, minSal: 1 } },
     ]);
     console.log(list);
     return list;

@@ -7,6 +7,7 @@ import {
   Query,
   ValidationPipe,
   UsePipes,
+  Res,
 } from '@nestjs/common';
 import { ReadService } from './read.service';
 import { AdminGuard, AuthGuard, IsAuthorisedGuard } from 'src/auth/auth.guard';
@@ -16,6 +17,7 @@ import {
   RatingDto,
   SortedDto,
 } from './dto/employee.dto';
+import { Response } from 'express';
 
 @Controller('emp')
 @UseGuards(AuthGuard)
@@ -28,6 +30,13 @@ export class ReadController {
     @Query(new ValidationPipe({ transform: true })) query: PaginationDto,
   ) {
     return this.readService.findAll(query.limit, query.page);
+  }
+
+  @Get('/download')
+  @UseGuards(AdminGuard)
+  async downloadEmplist(@Res() res: Response) {
+    const path = await this.readService.downloadEmpList();
+    res.download(path);
   }
 
   @Get('/sorted')

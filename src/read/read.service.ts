@@ -5,10 +5,11 @@ import { keys } from 'src/shared/dto/shared.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ChangeLog, Employee } from 'src/schemas/employee.schema';
+import { writeFileSync } from 'fs';
+const csvPath = join(__dirname, '../../data/data.csv');
 
 @Injectable()
 export class ReadService {
-  datapath = join(__dirname, '../../data/data.json');
   constructor(
     @InjectModel(Employee.name) private employeeModel: Model<Employee>,
     @InjectModel(ChangeLog.name) private changeLogModel: Model<ChangeLog>,
@@ -53,7 +54,15 @@ export class ReadService {
       const emp = await this.employeeModel
         .find(
           {},
-          { name: 1, age: 1, position: 1, department: 1, salary: 1, email: 1 },
+          {
+            empId: 1,
+            name: 1,
+            age: 1,
+            position: 1,
+            department: 1,
+            salary: 1,
+            email: 1,
+          },
         )
         .sort({ [param]: order })
         .lean()
@@ -114,30 +123,23 @@ export class ReadService {
 
     return emp;
   }
-  // last boss -1
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   getEmpHistory(empId: number) {
-    // const empChangeLog = this.sharedService.changeLog.filter(
-    //   (e) => e.empId === empId,
-    // );
-    // empChangeLog.sort((a, b) => b.updatedAt - a.updatedAt);
-    // const empHist: {
-    //   update: number;
-    //   updatedAt: number;
-    //   after: object;
-    //   before: object;
-    // }[] = [];
-    // let update = empChangeLog.length;
-    // empChangeLog.map((e) => {
-    //   const { updatedAt, after, before } = e;
-    //   empHist.push({ update: update--, updatedAt, after, before });
-    // });
-    // return empHist;
     const empHist = this.changeLogModel
       .find({ empId: empId })
       .lean()
       .sort({ updatedAt: -1 })
       .exec();
     return empHist;
+  }
+
+  async downloadEmpList() {
+    const emp: Employee[] = await this.employeeModel
+      .find({}, { __v: 0 })
+      .lean()
+      .exec();
+    const csvData = this.sharedService.JSONtoCSV(emp);
+    writeFileSync(csvPath, csvData);
+    return csvPath;
   }
 }

@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { NumberKey } from './dto/shared.dto';
 import { ChangeLog, Employee } from 'src/schemas/employee.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -9,43 +8,6 @@ export class SharedService {
   constructor(
     @InjectModel(ChangeLog.name) private changeLogModel: Model<ChangeLog>,
   ) {}
-
-  // get emp(): EmployeeDto[] {
-  //   return JSON.parse(readFileSync(datapath, 'utf-8'));
-  // }
-
-  // get changeLog(): ChangeLogDto[] {
-  //   return JSON.parse(readFileSync(changepath, 'utf-8'));
-  // }
-
-  // set emp(emp: EmployeeDto[]) {
-  //   writeFileSync(datapath, JSON.stringify(emp));
-  // }
-  // set changeLog(changeLog: ChangeLogDto[]) {
-  //   writeFileSync(changepath, JSON.stringify(changeLog));
-  // }
-
-  // findEmp(emp: EmployeeDto[], key: string, parameter: string | number): number {
-  //   const index: number = emp.findIndex((e) => e[key] === parameter);
-  //   return index;
-  // }
-  // sortBy(employees: Employee[], param: keys, order: number | undefined | null) {
-  //   employees.sort((a, b) => {
-  //     if (order === 1 || order !== -1) {
-  //       if (a[param] < b[param]) {
-  //         return -1;
-  //       } else if (a[param] === b[param]) {
-  //         return 0;
-  //       } else return 1;
-  //     } else {
-  //       if (a[param] > b[param]) {
-  //         return -1;
-  //       } else if (a[param] === b[param]) {
-  //         return 0;
-  //       } else return 1;
-  //     }
-  //   });
-  // }
 
   paginate(
     employees: Employee[],
@@ -73,13 +35,7 @@ export class SharedService {
     const returnList = employees.slice((page - 1) * limit, page * limit);
     return returnList;
   }
-  arrAverage(arr: number[]): number[] {
-    let tot: number = 0;
-    arr.map((element) => {
-      tot += element;
-    });
-    return [tot, tot / arr.length];
-  }
+
   JSONtoCSV(objArr: { [key: string]: string | number }[]): string {
     let csv = '';
     const headers = Object.keys(objArr[0]);
@@ -90,21 +46,6 @@ export class SharedService {
     });
     console.log(csv);
     return csv;
-  }
-  findMax(emp: Employee[], key: NumberKey): number {
-    let max = 0;
-    emp.map((e) => {
-      if (e[key] > max) max = e[key];
-    });
-    return max;
-  }
-
-  findMin(emp: Employee[], key: NumberKey): number {
-    let min = Infinity;
-    emp.map((e) => {
-      if (e[key] < min) min = e[key];
-    });
-    return min;
   }
 
   async createChangeLog(empId: number): Promise<ChangeLog> {
